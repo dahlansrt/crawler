@@ -11,7 +11,13 @@ def hello_world():
 def get_company():
 	company = pd.read_csv('company.csv', index_col='Id')
 	#return company.to_json
-	return company.head().to_json(orient='index')
+	return company.to_json(orient='index')
+
+@app.route('/company/<int:top>/top', methods=['GET'])
+def get_company_top(top):
+	company = pd.read_csv('company.csv', index_col='Id')
+	#return company.to_json
+	return company.head(top).to_json(orient='index')
 
 @app.route('/company/<int:company_id>', methods=['GET'])
 def get_company_by_id(company_id):
