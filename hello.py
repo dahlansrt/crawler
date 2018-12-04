@@ -1,25 +1,7 @@
 from flask import Flask, jsonify
+import pandas as pd
 
 app = Flask(__name__)
-
-company = [
-    {
-        'uid': 1,
-        'company_name': u'Invest Expat',
-        'company_description': u'Neque porro quisquam est qui dolorem ipsum quia dolor', 
-        'company_industry': u'wealth managemen', 
-		'company_address': u'21/F On Hing Building1 On Hing TerraceCentral HONG KONG', 
-        'company_website': u'http://www.invest-expat.com'
-    },
-    {
-        'uid': 2,
-        'company_name': u'ABC Expat',
-        'company_description': u'Neque porro quisquam est qui dolorem ipsum quia dolor', 
-        'company_industry': u'wealth managemen', 
-		'company_address': u'21/F On Hing Building1 On Hing TerraceCentral HONG KONG', 
-        'company_website': u'http://www.invest-expat.com'
-    }
-]
 
 @app.route('/')
 def hello_world():
@@ -27,8 +9,21 @@ def hello_world():
 
 @app.route('/company', methods=['GET'])
 def get_company():
-    return jsonify({'company': company})    
+	company = pd.read_csv('company.csv', index_col='Id')
+	#return company.to_json
+	return company.head().to_json(orient='index')
 
+@app.route('/company/<int:company_id>', methods=['GET'])
+def get_company_by_id(company_id):
+	company = pd.read_csv('company.csv', index_col='Id')
+	#return company.to_json
+	return company.loc[[company_id]].to_json(orient='index')
+
+@app.route('/company/<company_name>', methods=['GET'])
+def get_company_by_name(company_name):
+	company = pd.read_csv('company.csv', index_col='Id')
+	#return company.to_json
+	return company[company['company_name'].str.contains(company_name)] .to_json(orient='index')
 
 if __name__ == '__main__':
     app.run(debug=True)    
